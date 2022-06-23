@@ -1,0 +1,145 @@
+<div class="container-fluid">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb" *ngIf="!negocio">
+      <li class="breadcrumb-item">
+        <span class="placeholder-glow">
+          <span class="placeholder" style="width: 100px;"></span></span>
+      </li>
+      <li class="breadcrumb-item">
+        <span class="placeholder-glow">
+          <span class="placeholder" style="width: 100px;"></span></span>
+      </li>
+    </ol>
+    <ol class="breadcrumb" *ngIf="negocio">
+      <li class="breadcrumb-item">
+        <a *ngIf="negocio" [routerLink]="['']" [queryParams]="{negocioId: negocio?.negocioId}"
+          routerLinkActive="router-link-active">{{ negocio?.nombre }}</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">Productos o Servicios</li>
+    </ol>
+  </nav>
+</div>
+
+<div class="container">
+  <div class="alert alert-success alert-dismissible fade show" role="alert" *ngIf="mensaje.length > 0">
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" (click)="cerrarMsj()"></button>
+    {{ mensaje }}
+  </div>
+
+  <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="mensajeError.length > 0">
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"
+      (click)="cerrarMsjError()"></button>
+    {{ mensajeError }}
+  </div>
+
+  <form>
+    <div class="mb-3 grid">
+      <div class="row">
+        <div class="col-12 col-md-12">
+          <label for="inputSku" class="col-6 col-form-label">SKU<label class="text-danger">*</label></label>
+        </div>
+        <div class="col-10 col-md-10">
+          <div>
+            <input type="text" class="form-control" name="inputSku" id="inputSku" placeholder="SKU" [(ngModel)]="sku"
+              [ngModelOptions]="{standalone: true}">
+          </div>
+        </div>
+        <div class="col-2 col-md-2 align-bottom">
+          <a name="" id="" class="btn btn-outline-secondary" (click)="generarSKU()" role="button">Generar SKU</a>
+        </div>
+        <div class="col-12 col-md-6">
+          <label for="inputNombre" class="col-6 col-form-label">Nombre <label class="text-danger">*</label> </label>
+          <div>
+            <input type="text" class="form-control" name="inputNombre" id="inputNombre" placeholder="Nombre"
+              [(ngModel)]="nombre" [ngModelOptions]="{standalone: true}">
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label for="inputDescripcion" class="col-6 col-form-label">Descripción <label
+              class="text-danger">*</label></label>
+          <label for="" class="form-label"></label>
+          <textarea class="form-control" name="inputDescripcion" id="" rows="3" placeholder="Breve descripción"
+            [(ngModel)]="descripcion" [ngModelOptions]="{standalone: true}"></textarea>
+        </div>
+        <div class="col-12 col-md-6">
+          <label for="inputPrecio" class="col-6 col-form-label">Precio<label class="text-danger">*</label></label>
+          <div>
+            <input type="number" class="form-control" name="inputPrecio" id="inputPrecio" placeholder="0.00"
+              [(ngModel)]="precio" [ngModelOptions]="{standalone: true}">
+          </div>
+        </div>
+        <div class="col-12 col-md-6">
+          <label for="inputCosto" class="col-6 col-form-label">Costo <label class="text-danger">*</label></label>
+          <div>
+            <input type="number" class="form-control" name="inputCosto" id="inputCosto" placeholder="0.00"
+              [(ngModel)]="costo" [ngModelOptions]="{standalone: true}">
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label for="" class="form-label col-form-label">Unidad de medida</label>
+          <select class="form-control" name="selectUnidadMedida" id="selectUnidadMedida" [(ngModel)]="unidadMedida">
+            <option *ngFor="let um of unidadesMedida" value="{{um}}">{{um}}</option>
+          </select>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label for="" class="form-label col-form-label">Producto / servicio</label>
+          <select class="form-control" name="selectTipoProducto" id="selectTipoProducto" [(ngModel)]="tipo">
+            <option value="1">Producto</option>
+            <option value="2">Servicio</option>
+            <option value="3">Mixto</option>
+          </select>
+        </div>
+
+        <div class="col-12 col-md-6 mt-4">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" checked="{{estado}}" id="checkboxEstado"
+              [(ngModel)]="estado" [ngModelOptions]="{standalone: true}">
+            <label class="form-check-label" for="checkboxEstado">
+              Activo
+            </label>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+
+    <div class="d-flex flex-row-reverse">
+      <div class="p-1"><button type="submit" class="btn btn-primary" (click)="save()">Guardar</button></div>
+      <div class="p-1"><button type="submit" class="btn btn-outline-danger" (click)="clean()">Cancelar</button></div>
+    </div>
+  </form>
+  <table class="mt-4 table">
+    <thead>
+      <tr>
+        <th>SKU</th>
+        <th>Nombre</th>
+        <th>Descripción</th>
+        <th>Unidad de <br> medida</th>
+        <th>Precio</th>
+        <th>Costo</th>
+        <th>Estado</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let producto of productos">
+        <td scope="row">{{ producto.sku }}</td>
+        <td>{{ producto.nombre }}</td>
+        <td>{{ producto.descripcion }}</td>
+        <td>{{ producto.unidadMedida }}</td>
+        <td>{{ producto.precio }}</td>
+        <td>{{ producto.costo }}</td>
+        <td>{{ producto.estado === 1 ? 'Activo' : 'Inactivo' }}</td>
+        <td>
+          <button type="button" class="btn btn-secondary" (click)="edit(producto)">Editar</button>
+          &nbsp;
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>

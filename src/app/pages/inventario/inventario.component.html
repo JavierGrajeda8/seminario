@@ -1,0 +1,160 @@
+<div class="container-fluid">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb" *ngIf="!negocio">
+      <li class="breadcrumb-item">
+        <span class="placeholder-glow">
+          <span class="placeholder" style="width: 100px;"></span></span>
+      </li>
+      <li class="breadcrumb-item">
+        <span class="placeholder-glow">
+          <span class="placeholder" style="width: 100px;"></span></span>
+      </li>
+    </ol>
+    <ol class="breadcrumb" *ngIf="negocio">
+      <li class="breadcrumb-item">
+        <a *ngIf="negocio" [routerLink]="['']" [queryParams]="{negocioId: negocio?.negocioId}"
+          routerLinkActive="router-link-active">{{ negocio?.nombre }}</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">Inventario</li>
+    </ol>
+  </nav>
+</div>
+<div class="container">
+  <button type="button" class="btn btn-primary" (click)="newInvetory(content)">Nueva entrada de inventario</button>
+  <div class="alert alert-success alert-dismissible fade show" role="alert" *ngIf="mensaje.length > 0">
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" (click)="cerrarMsj()"></button>
+    {{ mensaje }}
+  </div>
+
+  <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="mensajeError.length > 0">
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"
+      (click)="cerrarMsjError()"></button>
+    {{ mensajeError }}
+  </div>
+</div>
+
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Nueva entrada de inventario</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form>
+      <div class="mb-3 grid">
+        <div class="row">
+          <div class="col-12 col-md-12">
+            <div class="form-group">
+              <label for="movimientoInventarioId">Movimiento ID</label>
+              <div class="input-group">
+                <input type="text" class="form-control" name="movimientoInventarioId" id="movimientoInventarioId" placeholder="Movimiento Inventario ID"
+                [(ngModel)]="movimientoInventarioId" [ngModelOptions]="{standalone: true}">
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-12">
+            <div class="form-group">
+              <label for="tipoMovimientoInventario" class="form-label col-form-label">Tipo de movimiento</label>
+              <select class="form-control" name="tipoMovimientoInventario" id="tipoMovimientoInventario" [(ngModel)]="tipoMovimientoInventario">
+                <option value="1">Producción</option>
+                <option value="2">Compra</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-4 col-md-4">
+            <div class="form-group">
+              <label for="factura">Factura</label>
+              <div class="input-group">
+                <input type="text" class="form-control" name="factura" id="factura" placeholder="Factura"
+                [(ngModel)]="factura" [ngModelOptions]="{standalone: true}">
+              </div>
+            </div>
+          </div>
+          <div class="col-4 col-md-4">
+            <div class="form-group">
+              <label for="serieFactura">Serie Factura</label>
+              <div class="input-group">
+                <input type="text" class="form-control" name="serieFactura" id="serieFactura" placeholder="Serie Factura"
+                [(ngModel)]="serieFactura" [ngModelOptions]="{standalone: true}">
+              </div>
+            </div>
+          </div>
+          <div class="col-4 col-md-4">
+            <div class="form-group">
+              <label for="dateOfBirth">Fecha de movimiento</label>
+              <div class="input-group">
+                <input id="dateOfBirth" class="form-control" placeholder="yyyy-mm-dd" name="dp" ngbDatepicker
+                [(ngModel)]="fechaMovimiento"
+                  #dp="ngbDatepicker">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calendar" (click)="dp.toggle()" type="button"></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-4 col-md-4">
+            <div class="form-group">
+              <label for="producto">Producto</label>
+              <div class="input-group">
+                <select class="form-control" (change)="changeProduct($event)" name="producto" id="producto" [(ngModel)]="producto" placeholder="Elige un producto" >
+                  <option *ngFor="let p of productos" value="{{p.sku}}">{{p.nombre}}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="col-3 col-md-3 ">
+            <div class="form-group">
+              <label for="costo">Costo</label>
+              <div class="input-group">
+                <input type="number" class="form-control" name="costo" id="costo" placeholder="8.50"
+                [(ngModel)]="costo" [ngModelOptions]="{standalone: true}">
+              </div>
+            </div>
+          </div>
+          <div class="col-3 col-md-3 ">
+            <div class="form-group">
+              <label for="cantidad">Cantidad ({{productoC?.unidadMedida}})</label>
+              <div class="input-group">
+                <input type="number" class="form-control" name="cantidad" id="cantidad" placeholder="10"
+                [(ngModel)]="cantidad" [ngModelOptions]="{standalone: true}">
+              </div>
+            </div>
+          </div>
+          <div class="col-2 col-md-2" style="display: flex;flex-direction: column-reverse;justify-content: center;">
+            <button type="button" class="btn btn-outline-dark" [disabled]="(cantidad <= 0) || (costo <= 0) || producto === ''" (click)="addProduct()">Agregar</button>
+          </div>
+        </div>
+      </div>
+    </form>
+    <table class="mt-4 table">
+      <thead>
+        <tr>
+          <th>SKU</th>
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Unidad de <br> medida</th>
+          <th>Costo</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let movimiento of movimientoInventario">
+          <td scope="row">{{ movimiento.sku }}</td>
+          <td >{{ movimiento.producto?.nombre }}</td>
+          <td >{{ movimiento.cantidad }}</td>
+          <td >{{ movimiento.producto?.unidadMedida }}</td>  
+          <td >{{ movimiento.costo }}</td>
+          <td>
+            <button type="button" class="btn btn-secondary" (click)="edit(movimiento)">Editar</button>
+            &nbsp;
+            <button type="button" class="btn btn-danger" (click)="delete(movimiento)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-primary" disabled (click)="modal.close('Save click')">Save</button>
+  </div>
+</ng-template>
