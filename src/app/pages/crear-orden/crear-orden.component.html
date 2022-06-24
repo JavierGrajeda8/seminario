@@ -1,3 +1,262 @@
-<div class="container">
-    hello world!
+<div class="container-fluid">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb" *ngIf="!negocio">
+      <li class="breadcrumb-item">
+        <span class="placeholder-glow">
+          <span class="placeholder" style="width: 100px;"></span></span>
+      </li>
+      <li class="breadcrumb-item">
+        <span class="placeholder-glow">
+          <span class="placeholder" style="width: 100px;"></span></span>
+      </li>
+    </ol>
+    <ol class="breadcrumb" *ngIf="negocio">
+      <li class="breadcrumb-item">
+        <a *ngIf="negocio" [routerLink]="['']" [queryParams]="{negocioId: negocio?.negocioId}"
+          routerLinkActive="router-link-active">{{ negocio?.nombre }}</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">Órdenes</li>
+    </ol>
+  </nav>
 </div>
+
+<div class="container">
+  <div class="alert alert-success alert-dismissible fade show" role="alert" *ngIf="mensaje.length > 0">
+    {{ mensaje }}
+    <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close" (click)="cerrarMsj()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="mensajeError.length > 0">
+    {{ mensajeError }}
+    <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close" (click)="cerrarMsjError()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <button type="button" class="btn btn-primary" (click)="newOrder(content)">Nueva orden</button>
+
+  <table class="mt-4 table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Cliente</th>
+        <th>Documento</th>
+        <th>Fecha</th>
+        <th>Total</th>
+        <th>Estado</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let v of ventas">
+        <td scope="row">{{ v.ventaId }}</td>
+        <td>{{v.nombreCliente}}</td>
+        <td>{{v.serieFactura}}-{{v.factura}}</td>
+        <td>{{v.fecha | date : 'shortDate'}}</td>
+        <td>{{v.total}}</td>
+        <td>{{v.estado ==  7 ? 'Por confirmar' : 'No definido'}}</td>
+        <td>
+            <button type="button" class="btn btn-secondary" (click)="next(v)" >
+                {{ v.estado == 7 ? 'Confirmar' : 'NA' }}
+            </button>
+            <button type="button" class="btn btn-medium" (click)="detail(content, v)" >Ver detalle</button>
+        </td>
+        
+      </tr>
+    </tbody>
+  </table>
+
+</div>
+
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Nueva orden</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form>
+      <div class="mb-3 grid">
+        <div class="row">
+          <div class="col-12 col-md-12">
+            <div class="form-group">
+              <label for="ventaId">Orden ID</label>
+              <div class="input-group">
+                <input type="text" class="form-control" name="ventaId" id="ventaId"
+                readonly
+                  placeholder="Movimiento Inventario ID" [(ngModel)]="venta.ventaId"
+                  [ngModelOptions]="{standalone: true}">
+              </div>
+            </div>
+          </div>
+          <div class="col-5 col-md-5">
+            <div class="form-group">
+              <label for="nombreCliente">Cliente<label class="text-danger">*</label></label>
+              <div class="input-group">
+                <input type="text" class="form-control" name="nombreCliente" id="nombreCliente"
+                  placeholder="Nombre del cliente" [(ngModel)]="venta.nombreCliente"
+                  [readonly]="viewDetail"
+                  [ngModelOptions]="{standalone: true}">
+              </div>
+            </div>
+          </div>
+          <div class="col-2 col-md-2">
+            <div class="form-group">
+              <label for="nit">Nit<label class="text-danger">*</label></label>
+              <div class="input-group">
+                <input type="text" class="form-control" name="nit" id="nit" placeholder="616168-1"
+                [readonly]="viewDetail" [(ngModel)]="venta.nit" [ngModelOptions]="{standalone: true}">
+              </div>
+            </div>
+          </div>
+          <div class="col-5 col-md-5">
+            <div class="form-group">
+              <label for="fecha">Fecha<label class="text-danger">*</label></label>
+              <div class="input-group">
+                <input id="fecha" class="form-control" placeholder="yyyy-mm-dd" name="dp" ngbDatepicker
+                [readonly]="viewDetail" [(ngModel)]="fechaAux" #dp="ngbDatepicker">
+                <div class="input-group-append" *ngIf="!viewDetail">
+                  <button class="btn btn-outline-secondary calendar" (click)="dp.toggle()" type="button"></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-5 col-md-5">
+            <div class="form-group">
+              <label for="factura">Factura<label class="text-danger">*</label></label>
+              <div class="input-group">
+                <input type="text" class="form-control" name="factura" id="factura" placeholder="3416541"
+                [readonly]="viewDetail" [(ngModel)]="venta.factura" [ngModelOptions]="{standalone: true}">
+              </div>
+            </div>
+          </div>
+          <div class="col-2 col-md-2">
+            <div class="form-group">
+              <label for="serieFactura">Serie<label class="text-danger">*</label></label>
+              <div class="input-group">
+                <input type="text" class="form-control" name="serieFactura" id="serieFactura" placeholder="A-1"
+                [readonly]="viewDetail" [(ngModel)]="venta.serieFactura" [ngModelOptions]="{standalone: true}">
+              </div>
+            </div>
+          </div>
+          <div class="col-5 col-md-5">
+            <div class="form-group">
+              <label for="descripcion">Descripción</label>
+              <div class="input-group">
+                <textarea type="text" class="form-control" name="descripcion" id="descripcion"
+                  placeholder="Breve descripción de la orden" [(ngModel)]="venta.descripcion"
+                  [readonly]="viewDetail" [ngModelOptions]="{standalone: true}"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12">
+          <p class="h5">Detalle orden <span class="text-primary">(Total: {{venta.total}})</span></p>
+        </div>
+      </div>
+      <div class="row" *ngIf="!viewDetail">
+        <div class="col-4 col-md-4" >
+          <div class="form-group">
+            <label for="producto"><small>Producto / Servicio</small></label>
+            <div class="input-group">
+              <select class="form-control" (change)="changeProduct($event)" name="producto" id="producto"
+                [(ngModel)]="ventaDetalle.sku" placeholder="Elige un producto">
+                <option *ngFor="let p of productos" value="{{p.sku}}">{{p.nombre}} | {{p.unidadMedida}}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="col-2 col-md-2 ">
+          <div class="form-group">
+            <label for="cantidad"><small>Cantidad</small></label>
+            <div class="input-group">
+              <input type="number" class="form-control" name="cantidad" id="cantidad" placeholder="1"
+                (keyup)="cambioCantidad($event)" [(ngModel)]="ventaDetalle.cantidad"
+                (change)="cambioCantidad($event)"
+                [ngModelOptions]="{standalone: true}">
+            </div>
+          </div>
+        </div>
+        <div class="col-2 col-md-2 ">
+          <div class="form-group">
+            <label for="precioUnitario">
+              <small>Precio unitario</small>
+            </label>
+            <div class="input-group">
+              <label for="">{{ventaDetalle.precioUnitario}}</label>
+            </div>
+          </div>
+        </div>
+        <div class="col-2 col-md-2 ">
+          <div class="form-group">
+            <label for="descuento">
+              <small>Descuento (%)</small>
+            </label>
+            <div class="input-group">
+              <input type="number" class="form-control" name="descuento" id="descuento" placeholder="1"
+                (keyup)="cambioCantidad($event)"
+                (change)="cambioCantidad($event)"
+                [(ngModel)]="ventaDetalle.descuento" [ngModelOptions]="{standalone: true}">
+            </div>
+          </div>
+        </div>
+        <div class="col-2 col-md-2 ">
+          <div class="form-group">
+            <label for="descuento">
+              <small>Total</small>
+            </label>
+            <div class="input-group">
+              <label for="">{{ventaDetalle.precioTotal}}</label>
+            </div>
+          </div>
+        </div>
+        <div class="col-2 offset-10">
+          <div class="d-grid gap-2">
+            <button type="button" name="" id="" class="btn btn-small btn-success" (click)="addDetail()"
+            [disabled]="ventaDetalle.sku.length === 0 || ventaDetalle.cantidad <= 0"
+            >Agregar</button>
+          </div>
+        </div>
+      </div>
+    </form>
+    <table class="mt-4 table table-sm">
+      <thead>
+        <tr>
+          <th><small>Producto/Servicio</small></th>
+          <th><small>Cantidad </small></th>
+          <th><small>Precio Unitario </small></th>
+          <th><small>Descuento </small></th>
+          <th><small>Precio Total </small></th>
+          <th><small>Acción </small></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let vd of venta.ventaDetalle; let i = index">
+          <td scope="row">
+            {{vd.sku}} {{vd.descripcion}}
+          </td>
+          <td>{{vd.cantidad}}</td>
+          <td>{{vd.precioUnitario}}</td>
+          <td>{{vd.descuento}} %</td>
+          <td>{{vd.precioTotal}}</td>
+          <td>
+            <button *ngIf="!viewDetail" type="button" class="btn btn-outline-danger p1" (click)="removeDetail(i)"><span
+                aria-hidden="true">&times;</span></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="modal-footer" *ngIf="!viewDetail">
+    <button type="button" class="btn btn-outline-danger" (click)="modal.close('Cancel click')">Cancelar</button>
+    <button type="button"
+      [disabled]="venta.nombreCliente.trim().length === 0 || venta.factura.trim().length === 0 || venta.serieFactura.trim().length === 0 || venta.ventaDetalle?.length === 0"
+      class="btn btn-primary" (click)="modal.close('SaveClick')">Guardar</button>
+  </div>
+
+</ng-template>

@@ -6,6 +6,7 @@ export namespace ConstStatus {
   export const transito = 4;
   export const enviado = 5;
   export const confirmado = 6;
+  export const abierta = 7;
 
   export const eliminado = 99;
 }
