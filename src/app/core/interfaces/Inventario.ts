@@ -9,4 +9,5 @@ export interface Inventario {
     negocioId: number;
     negocio?: Negocio;
     estado: number;
+    edit?: boolean;
 }

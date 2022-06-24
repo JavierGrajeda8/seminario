@@ -1,13 +1,18 @@
 <div class="container">
     <div class="container">
         <div class="alert alert-success alert-dismissible fade show" role="alert" *ngIf="mensaje.length > 0">
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" (click)="cerrarMsj()" ></button>
-          {{ mensaje }}
-        </div>
-
-        <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="mensajeError.length > 0">
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" (click)="cerrarMsj()" ></button>
+            {{ mensaje }}
+            <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close" (click)="cerrarMsj()">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        
+          <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="mensajeError.length > 0">
             {{ mensajeError }}
+            <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close"
+              (click)="cerrarMsjError()">
+              <span aria-hidden="true">&times;</span>
+            </button>
           </div>
         
         <form>

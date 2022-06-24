@@ -51,7 +51,7 @@ export class InventarioComponent implements OnInit {
   tipoMovimientoInventario = 1;
   producto? = '';
   fecha = '';
-  fechaMovimiento = { year: 2022, month: 6, day: 22 };
+  fechaMovimiento = { year: 2022, month: 6, day: 20 };
   serieFactura = '';
   factura = '';
   costo = 0.0;
@@ -74,12 +74,22 @@ export class InventarioComponent implements OnInit {
         .subscribe((data) => {
           this.negocio = data as Negocio;
           this.getProductos();
+          this.getInventario();
         });
     });
     this.inventario = [];
+    this.setUpDate();
   }
 
   ngOnInit(): void {}
+
+  setUpDate() {
+    const today = new Date(Date.now());
+
+    this.fechaMovimiento.year = today.getFullYear();
+    this.fechaMovimiento.month = today.getMonth() + 1;
+    this.fechaMovimiento.day = today.getDate();
+  }
 
   getInventario() {
     this.inventarioService
@@ -87,6 +97,7 @@ export class InventarioComponent implements OnInit {
       .valueChanges()
       .subscribe((data) => {
         this.inventario = data as Inventario[];
+        console.log('inventario', this.inventario);
       });
   }
 
@@ -96,6 +107,12 @@ export class InventarioComponent implements OnInit {
       .valueChanges()
       .subscribe((data) => {
         this.productos = data as ProductoServicio[];
+        if (this.productos.length == 0) {
+          this.mensajeError =
+            'El giro de negocio no tiene productos asociados.';
+        } else {
+          this.mensajeError = '';
+        }
       });
   }
 
@@ -107,6 +124,9 @@ export class InventarioComponent implements OnInit {
         (result) => {
           console.log(`Closed with: ${result}`);
           console.log(this.fechaMovimiento);
+          if (result === 'SaveClick') {
+            this.save();
+          }
         },
         (reason) => {
           console.log(`Dismissed ${this.getDismissReason(reason)}`);
@@ -124,40 +144,114 @@ export class InventarioComponent implements OnInit {
     }
   }
 
-  save() {}
+  clean() {
+    this.tipoMovimientoInventario = 1;
+    this.producto = '';
+    this.fecha = '';
+    this.serieFactura = '';
+    this.factura = '';
+    this.costo = 0.0;
+    this.cantidad = 0;
+    this.setUpDate();
+  }
 
-  clean() {}
+  edit(inventario: Inventario) {
+    inventario.edit = !inventario.edit;
+  }
 
-  edit(movimientoInventario: MovimientoInventario) {}
+  detail(detalle: any, inventario: Inventario) {
+    const sub = this.inventarioService
+      .getAllMovimiento(
+        this.negocio.negocioId.toString(),
+        inventario.inventarioId.toString()
+      )
+      .valueChanges()
+      .subscribe((data) => {
+        this.movimientoInventario = data as MovimientoInventario[];
+        this.modalService
+          .open(detalle, { ariaLabelledBy: 'modal-basic-title', size: 'lg' })
+          .result.then(
+            (result) => {
+              console.log(`Closed with: ${result}`);
+              sub.unsubscribe();
+            },
+            (reason) => {
+              sub.unsubscribe();
+              console.log(`Dismissed ${this.getDismissReason(reason)}`);
+            }
+          );
+      });
+  }
+
+  saveDetail(i: Inventario) {
+    const inputAux = document.getElementById(
+      'cantidad_' + i.sku
+    ) as HTMLInputElement;
+    console.log(i.sku);
+    console.log(inputAux.value);
+    i.cantidad = parseFloat(inputAux.value);
+    i.edit =  false;
+    this.inventarioService.set(i);
+    this.mensaje = `Inventario de ${i.Producto.nombre} modificado correctamente.`;
+
+  }
 
   delete(movimientoInventario: MovimientoInventario) {}
 
-  cerrarMsj() {}
+  cerrarMsj() {
+    this.mensaje = '';
+  }
 
-  cerrarMsjError() {}
+  cerrarMsjError() {
+    this.mensajeError = '';
+  }
 
-  addProduct() {
+  save() {
+    const inventarioAux = this.inventario.find((i) => i.sku === this.producto);
+    const productoServicioAux = this.productos.find(
+      (p) => p.sku === this.producto
+    ) as ProductoServicio;
+
+    console.log('inventarioAux', inventarioAux);
+
+    const inventario: Inventario = {
+      inventarioId: inventarioAux ? inventarioAux.inventarioId : Date.now(),
+      sku: this.producto!,
+      Producto: productoServicioAux,
+      cantidad: inventarioAux
+        ? this.cantidad + inventarioAux.cantidad
+        : this.cantidad,
+      negocioId: this.negocio.negocioId,
+      negocio: this.negocio as Negocio,
+      estado: ConstStatus.activo,
+    };
+
     const movimientoInventarioAux: MovimientoInventario = {
       movimientoInventarioId: Date.now(),
       inventarioId: this.inventarioId,
+      inventario: inventario,
       tipo: this.tipoMovimientoInventario,
       sku: this.producto!,
-      producto: this.productos.find(
-        (p) => p.sku === this.producto
-      ) as ProductoServicio,
+      producto: productoServicioAux,
       cantidad: this.cantidad,
       costo: this.costo,
-      fecha: new Date(Date.now()),
-      fechaMovimiento: new Date(
+      fecha: Date.now(),
+      fechaMovimiento: (new Date(
         this.fechaMovimiento.year,
         this.fechaMovimiento.month,
         this.fechaMovimiento.day
-      ),
+      )).getTime(),
       serieFactura: this.serieFactura,
       factura: this.factura,
       estado: ConstStatus.activo,
     };
-    this.movimientoInventario.push(movimientoInventarioAux);
+
+    this.inventarioService.set(inventario).then(() => {
+      this.inventarioService.setMovimiento(movimientoInventarioAux).then(() => {
+        this.mensaje = `${this.cantidad} ${productoServicioAux.unidadMedida} de ${productoServicioAux.nombre} agregados a inventario.`;
+        this.clean();
+      });
+    });
   }
 
   changeProduct(evt: any) {

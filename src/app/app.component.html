@@ -5,7 +5,7 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      <ul class="navbar-nav mr-auto">
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" >Inicio</a>
         </li>
@@ -25,10 +25,10 @@
           </div>
         </li>
       </ul>
-      <span class="navbar-text">
+      <span class="form-inline my-2 my-lg-0">
 
         <div ngbDropdown class="d-inline-block">
-          <button class="btn btn-outline-light mr-1" id="dropdownBasic1" ngbDropdownToggle>{{ empresa }}</button>
+          <button class="btn btn-outline-light mr-1" id="dropdownBasic1" ngbDropdownToggle>Negocio: {{ empresa }}</button>
           <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
             <button ngbDropdownItem *ngFor="let negocio of negocios"  (click)="changeRole(negocio)">{{ negocio.nombre }}</button>
           </div>

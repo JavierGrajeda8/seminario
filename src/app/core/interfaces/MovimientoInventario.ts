@@ -11,8 +11,8 @@ export interface MovimientoInventario {
     producto?: ProductoServicio;
     cantidad: number;
     costo: number;
-    fecha: Date;
-    fechaMovimiento: Date;
+    fecha: number;
+    fechaMovimiento: number;
     serieFactura: string;
     factura: string;
     estado: number;

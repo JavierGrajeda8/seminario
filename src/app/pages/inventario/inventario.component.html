@@ -20,17 +20,66 @@
   </nav>
 </div>
 <div class="container">
-  <button type="button" class="btn btn-primary" (click)="newInvetory(content)">Nueva entrada de inventario</button>
   <div class="alert alert-success alert-dismissible fade show" role="alert" *ngIf="mensaje.length > 0">
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" (click)="cerrarMsj()"></button>
     {{ mensaje }}
+    <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close" (click)="cerrarMsj()">
+      <span aria-hidden="true">&times;</span>
+    </button>
   </div>
 
   <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="mensajeError.length > 0">
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"
-      (click)="cerrarMsjError()"></button>
     {{ mensajeError }}
+    <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close" (click)="cerrarMsjError()">
+      <span aria-hidden="true">&times;</span>
+    </button>
   </div>
+
+  <button type="button" [disabled]="productos.length === 0" class="btn btn-primary" (click)="newInvetory(content)">Nueva
+    entrada de inventario</button>
+
+  <table class="mt-4 table">
+    <thead>
+      <tr>
+        <th>SKU</th>
+        <th>Nombre</th>
+        <th>Unidad de <br> medida</th>
+        <th>Cantidad</th>
+        <th>Estado</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let i of inventario">
+        <td scope="row">{{ i.sku }}</td>
+        <td>{{i.Producto.nombre}}</td>
+        <td>{{i.Producto.unidadMedida}}</td>
+        <td>
+          <span *ngIf="!i.edit">
+            {{i.cantidad}}
+          </span>
+          <div class="grid">
+            <div class="row">
+              <div class="col-6">
+                <input *ngIf="i.edit" class="form-control" [id]="'cantidad_' + i.sku" type="number"
+                  value="{{i.cantidad}}">
+              </div>
+              <div class="col-6">
+                <a *ngIf="i.edit" name="" id="" class="btn btn-success" role="button"
+                  (click)="saveDetail(i)">Guardar</a>
+              </div>
+            </div>
+          </div>
+        </td>
+        <td>{{ i.estado === 1 ? 'Activo' : 'Inactivo' }}</td>
+        <td>
+          <button type="button" class="btn btn-secondary" (click)="edit(i)">{{i.edit ? 'Cancelar' : 'Editar'}}</button>
+          <button type="button" class="btn btn-medium" (click)="detail(detalle, i)">Ver detalle</button>
+          &nbsp;
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
 </div>
 
 <ng-template #content let-modal>
@@ -48,15 +97,17 @@
             <div class="form-group">
               <label for="movimientoInventarioId">Movimiento ID</label>
               <div class="input-group">
-                <input type="text" class="form-control" name="movimientoInventarioId" id="movimientoInventarioId" placeholder="Movimiento Inventario ID"
-                [(ngModel)]="movimientoInventarioId" [ngModelOptions]="{standalone: true}">
+                <input type="text" class="form-control" name="movimientoInventarioId" id="movimientoInventarioId"
+                  placeholder="Movimiento Inventario ID" [(ngModel)]="movimientoInventarioId"
+                  [ngModelOptions]="{standalone: true}">
               </div>
             </div>
           </div>
           <div class="col-12 col-md-12">
             <div class="form-group">
               <label for="tipoMovimientoInventario" class="form-label col-form-label">Tipo de movimiento</label>
-              <select class="form-control" name="tipoMovimientoInventario" id="tipoMovimientoInventario" [(ngModel)]="tipoMovimientoInventario">
+              <select class="form-control" name="tipoMovimientoInventario" id="tipoMovimientoInventario"
+                [(ngModel)]="tipoMovimientoInventario">
                 <option value="1">Producción</option>
                 <option value="2">Compra</option>
               </select>
@@ -64,19 +115,19 @@
           </div>
           <div class="col-4 col-md-4">
             <div class="form-group">
-              <label for="factura">Factura</label>
+              <label for="factura">{{ tipoMovimientoInventario == 1 ? 'Lote' : 'Factura' }}</label>
               <div class="input-group">
-                <input type="text" class="form-control" name="factura" id="factura" placeholder="Factura"
-                [(ngModel)]="factura" [ngModelOptions]="{standalone: true}">
+                <input type="text" class="form-control" name="factura" id="factura" placeholder="1312231023"
+                  [(ngModel)]="factura" [ngModelOptions]="{standalone: true}">
               </div>
             </div>
           </div>
           <div class="col-4 col-md-4">
-            <div class="form-group">
+            <div class="form-group" *ngIf="tipoMovimientoInventario == 2">
               <label for="serieFactura">Serie Factura</label>
               <div class="input-group">
-                <input type="text" class="form-control" name="serieFactura" id="serieFactura" placeholder="Serie Factura"
-                [(ngModel)]="serieFactura" [ngModelOptions]="{standalone: true}">
+                <input type="text" class="form-control" name="serieFactura" id="serieFactura"
+                  placeholder="Serie Factura" [(ngModel)]="serieFactura" [ngModelOptions]="{standalone: true}">
               </div>
             </div>
           </div>
@@ -85,8 +136,7 @@
               <label for="dateOfBirth">Fecha de movimiento</label>
               <div class="input-group">
                 <input id="dateOfBirth" class="form-control" placeholder="yyyy-mm-dd" name="dp" ngbDatepicker
-                [(ngModel)]="fechaMovimiento"
-                  #dp="ngbDatepicker">
+                  [(ngModel)]="fechaMovimiento" #dp="ngbDatepicker">
                 <div class="input-group-append">
                   <button class="btn btn-outline-secondary calendar" (click)="dp.toggle()" type="button"></button>
                 </div>
@@ -97,7 +147,8 @@
             <div class="form-group">
               <label for="producto">Producto</label>
               <div class="input-group">
-                <select class="form-control" (change)="changeProduct($event)" name="producto" id="producto" [(ngModel)]="producto" placeholder="Elige un producto" >
+                <select class="form-control" (change)="changeProduct($event)" name="producto" id="producto"
+                  [(ngModel)]="producto" placeholder="Elige un producto">
                   <option *ngFor="let p of productos" value="{{p.sku}}">{{p.nombre}}</option>
                 </select>
               </div>
@@ -107,8 +158,8 @@
             <div class="form-group">
               <label for="costo">Costo</label>
               <div class="input-group">
-                <input type="number" class="form-control" name="costo" id="costo" placeholder="8.50"
-                [(ngModel)]="costo" [ngModelOptions]="{standalone: true}">
+                <input type="number" class="form-control" name="costo" id="costo" placeholder="8.50" [(ngModel)]="costo"
+                  [ngModelOptions]="{standalone: true}">
               </div>
             </div>
           </div>
@@ -117,44 +168,60 @@
               <label for="cantidad">Cantidad ({{productoC?.unidadMedida}})</label>
               <div class="input-group">
                 <input type="number" class="form-control" name="cantidad" id="cantidad" placeholder="10"
-                [(ngModel)]="cantidad" [ngModelOptions]="{standalone: true}">
+                  [(ngModel)]="cantidad" [ngModelOptions]="{standalone: true}">
               </div>
             </div>
-          </div>
-          <div class="col-2 col-md-2" style="display: flex;flex-direction: column-reverse;justify-content: center;">
-            <button type="button" class="btn btn-outline-dark" [disabled]="(cantidad <= 0) || (costo <= 0) || producto === ''" (click)="addProduct()">Agregar</button>
           </div>
         </div>
       </div>
     </form>
-    <table class="mt-4 table">
+
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-danger" (click)="modal.close('Cancel click')">Cancelar</button>
+    <button type="button" class="btn btn-outline-primary"
+      [disabled]="(cantidad <= 0) || (costo <= 0) || producto === '' || (tipoMovimientoInventario == 1 && factura.length == 0) || (tipoMovimientoInventario == 2 && (factura.length == 0 || serieFactura.length == 0))"
+      (click)="modal.close('SaveClick')">Guardar</button>
+  </div>
+</ng-template>
+
+<ng-template #detalle let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Detalle SKU  {{movimientoInventario[0].sku}} - {{movimientoInventario[0].producto?.nombre}}</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <table class="mt-4 table table-sm">
       <thead>
         <tr>
-          <th>SKU</th>
-          <th>Producto</th>
-          <th>Cantidad</th>
-          <th>Unidad de <br> medida</th>
+          <th>Id</th>
+          <th>Movimiento</th>
+          <th>Documento</th>
+          <th>Fecha</th>
           <th>Costo</th>
-          <th>Acción</th>
+          <th>Cantidad</th>
+          <th>Sistema</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let movimiento of movimientoInventario">
-          <td scope="row">{{ movimiento.sku }}</td>
-          <td >{{ movimiento.producto?.nombre }}</td>
-          <td >{{ movimiento.cantidad }}</td>
-          <td >{{ movimiento.producto?.unidadMedida }}</td>  
-          <td >{{ movimiento.costo }}</td>
+        <tr *ngFor="let md of movimientoInventario">
+          <td scope="row">
+            {{md.movimientoInventarioId}}
+          </td>
+          <td>{{md.tipo == 1 ? 'Producción' : 'Compra'}}</td>
+          <td>{{md.tipo == 1 ? md.factura : md.factura + '-' + md.serieFactura }}</td>
           <td>
-            <button type="button" class="btn btn-secondary" (click)="edit(movimiento)">Editar</button>
-            &nbsp;
-            <button type="button" class="btn btn-danger" (click)="delete(movimiento)">Eliminar</button>
+            {{md.fechaMovimiento | date : 'shortDate'}}
+          </td>
+          <td>{{md.costo}}</td>
+          <td>{{md.cantidad}}</td>
+          <td>
+            {{md.fecha | date : 'short'}}
           </td>
         </tr>
       </tbody>
     </table>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-outline-primary" disabled (click)="modal.close('Save click')">Save</button>
   </div>
 </ng-template>
