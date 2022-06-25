@@ -262,7 +262,7 @@ export class CrearOrdenComponent implements OnInit {
     this.venta.fecha = fechaSave;
 
     this.venta.historico = [
-      { fecha: Date.now(), estado: 'Creada', comentario: 'Creación manaul' },
+      { fecha: Date.now(), estado: 'Creada', comentario: 'Creación manual' },
     ];
 
     this.ventaService.set(this.venta).then(() => {

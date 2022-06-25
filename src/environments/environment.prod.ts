@@ -1,13 +1,12 @@
 export const environment = {
   production: true,
   firebaseConfig: {
-    apiKey: 'AIzaSyCCtejiJvqg3n0Xf76CDhJQ7lCoOLz1iY0',
-    authDomain: 'ingresapp-jg.firebaseapp.com',
-    databaseURL: 'https://ingresapp-jg.firebaseio.com',
-    projectId: 'ingresapp-jg',
-    storageBucket: 'ingresapp-jg.appspot.com',
-    messagingSenderId: '327251504047',
-    appId: '1:327251504047:web:7946057a40aee3412f9d5a',
-    measurementId: "G-HJ5VCSTSWD"
+    apiKey: 'AIzaSyAehw6My9ugMq9kjTFjYcTeQZYIuLvrgqM',
+    authDomain: 'seminario-7f66d.firebaseapp.com',
+    projectId: 'seminario-7f66d',
+    storageBucket: 'seminario-7f66d.appspot.com',
+    messagingSenderId: '313821545850',
+    appId: '1:313821545850:web:7794768cb5b4ba444ac2c3',
+    measurementId: 'G-VZNQPSP4CL',
   },
 };
