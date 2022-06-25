@@ -51,10 +51,11 @@ export class VentaService {
 
   }
 
-  public delete(negocioId: string, venta: Venta) {
+  public delete( venta: Venta) {
+    venta.estado = ConstStatus.eliminado;
     return this.firestore
-    .collection('producto')
-    .doc(negocioId)
+    .collection('negocio')
+    .doc(venta.negocioId.toString())
     .collection('venta')
     .doc(venta.ventaId.toString())
     .set(venta);

@@ -22,7 +22,19 @@ export class CrearOrdenComponent implements OnInit {
   negocio: any;
   productos: ProductoServicio[] = [];
   ventas: Venta[] = [];
+  ventasAll: Venta[] = [];
   viewDetail = false;
+  comentarios = '';
+  ordenActual = '';
+  estadoActual = '';
+  filterStatus = [
+    ConstStatus.abierta,
+    ConstStatus.confirmado,
+    ConstStatus.eliminado,
+    ConstStatus.transito,
+    ConstStatus.entregada,
+    ConstStatus.rechazada,
+  ];
   productoC: ProductoServicio = {
     sku: '',
     nombre: '',
@@ -132,7 +144,8 @@ export class CrearOrdenComponent implements OnInit {
       .getAll(this.negocio.negocioId.toString())
       .valueChanges()
       .subscribe((data) => {
-        this.ventas = data as Venta[];
+        this.ventasAll = data as Venta[];
+        this.filter();
       });
   }
 
@@ -247,20 +260,92 @@ export class CrearOrdenComponent implements OnInit {
     this.venta.negocioId = this.negocio.negocioId;
     this.venta.estado = ConstStatus.abierta;
     this.venta.fecha = fechaSave;
+
+    this.venta.historico = [
+      { fecha: Date.now(), estado: 'Creada', comentario: 'Creación manaul' },
+    ];
+
     this.ventaService.set(this.venta).then(() => {
       this.mensaje = 'Orden guardada correctamente';
       this.clearAll();
     });
   }
 
-  next(v: Venta) {
-    if (v.estado === ConstStatus.abierta) {
-      v.estado = ConstStatus.confirmado;
-    } 
+  delete(v: Venta, confirm: any) {
+    this.ordenActual = v.ventaId.toString();
+    this.estadoActual = 'Eliminado';
+    this.comentarios = '';
+    this.modalService
+      .open(confirm, { ariaLabelledBy: 'modal-basic-title' })
+      .result.then(
+        (result) => {
+          console.log(`Closed with: ${result}`);
+          if (result === 'Confirm') {
+            v.historico?.push({
+              fecha: Date.now(),
+              estado: 'Eliminada',
+              comentario: this.comentarios,
+            });
+            this.ventaService.delete(v).then(() => {
+              this.mensaje = 'Orden eliminada correctamente';
+            });
+          }
+        },
+        (reason) => {
+          console.log(`Dismissed ${this.getDismissReason(reason)}`);
+        }
+      );
+  }
 
-    this.ventaService.set(v).then(()=> {
-      this.mensaje = 'Orden actualizada correctamente';
-    });
+  next(v: Venta, confirm: any) {
+    let estadoAux = '';
+    let estadoN = 0;
+    this.comentarios = '';
+    switch (v.estado) {
+      case ConstStatus.abierta:
+        estadoAux = 'Confirmada';
+        estadoN = ConstStatus.confirmado;
+        break;
+      case ConstStatus.confirmado:
+        estadoAux = 'En tránsito';
+        estadoN = ConstStatus.transito;
+        break;
+      case ConstStatus.transito:
+        estadoAux = 'Entregada';
+        estadoN = ConstStatus.entregada;
+        break;
+      case ConstStatus.entregada:
+        estadoAux = 'Devuelto';
+        estadoN = ConstStatus.rechazada;
+        break;
+      default:
+        break;
+    }
+
+    this.ordenActual = v.ventaId.toString();
+    this.estadoActual = estadoAux;
+
+    this.modalService
+      .open(confirm, { ariaLabelledBy: 'modal-basic-title' })
+      .result.then(
+        (result) => {
+          console.log(`Closed with: ${result}`);
+          if (result === 'Confirm') {
+            v.estado = estadoN;
+            v.historico?.push({
+              fecha: Date.now(),
+              estado: estadoAux,
+              comentario: this.comentarios,
+            });
+            this.ventaService.set(v).then(() => {
+              this.mensaje = 'Orden actualizada correctamente';
+            });
+          }
+        },
+        (reason) => {
+          console.log(`Dismissed ${this.getDismissReason(reason)}`);
+        }
+      );
   }
 
   detail(content: any, v: Venta) {
@@ -282,5 +367,20 @@ export class CrearOrdenComponent implements OnInit {
           console.log(`Dismissed ${this.getDismissReason(reason)}`);
         }
       );
+  }
+
+  alterFilter(status: number) {
+    if (this.filterStatus.indexOf(status) >= 0) {
+      this.filterStatus.splice(this.filterStatus.indexOf(status), 1);
+    } else {
+      this.filterStatus.push(status);
+    }
+    this.filter();
+  }
+
+  filter() {
+    this.ventas = this.ventasAll.filter((v) =>
+      this.filterStatus.includes(v.estado)
+    );
   }
 }

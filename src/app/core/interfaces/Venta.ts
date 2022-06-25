@@ -1,15 +1,16 @@
-import { VentaDetalle } from "./VentaDetalle";
+import { VentaDetalle } from './VentaDetalle';
 
 export interface Venta {
-    ventaId: number;
-    negocioId: number;
-    serieFactura: string;
-    factura: string;
-    fecha: number;
-    total: number;
-    descripcion: string;
-    nit: string;
-    nombreCliente: string;
-    estado: number;
-    ventaDetalle?: VentaDetalle[];
+  ventaId: number;
+  negocioId: number;
+  serieFactura: string;
+  factura: string;
+  fecha: number;
+  total: number;
+  descripcion: string;
+  nit: string;
+  nombreCliente: string;
+  estado: number;
+  ventaDetalle?: VentaDetalle[];
+  historico?: { fecha: number; estado: string; comentario: string }[];
 }

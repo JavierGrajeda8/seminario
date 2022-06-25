@@ -1,23 +1,24 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
   <div class="container-fluid">
-      <a class="navbar-brand">Autenticado: <b></b></a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <a class="navbar-brand">Autenticado: <b></b></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" >Inicio</a>
+          <a class="nav-link active" style="cursor: pointer;" aria-current="page" (click)="goToRoute('')">Inicio</a>
         </li>
         <li ngbDropdown class="nav-item">
           <a href (click)="false" class="nav-link" ngbDropdownToggle>Gestión de órdenes</a>
           <div ngbDropdownMenu>
             <button ngbDropdownItem (click)="goToRoute('crear-orden')">Crear / modificar</button>
-            <button ngbDropdownItem (click)="goToRoute('reporte-orden')" >Reportes</button>
+            <button ngbDropdownItem (click)="goToRoute('reporte-orden')">Reportes</button>
           </div>
         </li>
 
-         <li ngbDropdown class="nav-item">
+        <li ngbDropdown class="nav-item">
           <a href (click)="false" class="nav-link" ngbDropdownToggle>Administración</a>
           <div ngbDropdownMenu>
             <button ngbDropdownItem (click)="goToRoute('productos')">Productos / Servicios</button>
@@ -26,11 +27,17 @@
         </li>
       </ul>
       <span class="form-inline my-2 my-lg-0">
-
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" style="cursor: pointer;" aria-current="page" (click)="goToRoute('negocio')">General</a>
+          </li>
+        </ul>
         <div ngbDropdown class="d-inline-block">
-          <button class="btn btn-outline-light mr-1" id="dropdownBasic1" ngbDropdownToggle>Negocio: {{ empresa }}</button>
+          <button class="btn btn-outline-light mr-1" id="dropdownBasic1" ngbDropdownToggle>Negocio:
+            {{ empresa }}</button>
           <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-            <button ngbDropdownItem *ngFor="let negocio of negocios"  (click)="changeRole(negocio)">{{ negocio.nombre }}</button>
+            <button ngbDropdownItem *ngFor="let negocio of negocios"
+              (click)="changeRole(negocio)">{{ negocio.nombre }}</button>
           </div>
         </div>
         <button class="ms-2 btn btn-outline-light" type="submit">Salir</button>
@@ -58,4 +65,7 @@
     {{ negocio?.descripcion }}
   </p>
 </div> -->
+
+
+
 <router-outlet></router-outlet>

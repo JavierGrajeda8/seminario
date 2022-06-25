@@ -16,6 +16,7 @@ import { CrearOrdenComponent } from './pages/crear-orden/crear-orden.component';
 import { SeguimientoOrdenComponent } from './pages/seguimiento-orden/seguimiento-orden.component';
 import { ReportesComponent } from './pages/reportes/reportes.component';
 import { InventarioComponent } from './pages/inventario/inventario.component';
+import { HomeComponent } from './pages/home/home.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { InventarioComponent } from './pages/inventario/inventario.component';
     CrearOrdenComponent,
     SeguimientoOrdenComponent,
     ReportesComponent,
-    InventarioComponent
+    InventarioComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,

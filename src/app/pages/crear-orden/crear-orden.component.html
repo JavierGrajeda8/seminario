@@ -37,6 +37,44 @@
 
   <button type="button" class="btn btn-primary" (click)="newOrder(content)">Nueva orden</button>
 
+  <div class="grid">
+    <div class="row p-2">
+      <div class="col-12">
+        <p class="h5">Filtros</p>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" [checked]="filterStatus.indexOf(7) >= 0" (click)="alterFilter(7)"
+            type="checkbox" id="" value="{3:option1}">
+          <label class="form-check-label" for="">Por confirmar</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" [checked]="filterStatus.indexOf(6) >= 0" (click)="alterFilter(6)"
+            type="checkbox" id="" value="option2">
+          <label class="form-check-label" for="">Confirmadas</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" [checked]="filterStatus.indexOf(5) >= 0" (click)="alterFilter(5)"
+            type="checkbox" id="" value="option3">
+          <label class="form-check-label" for="">En tránsito</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" [checked]="filterStatus.indexOf(4) >= 0" (click)="alterFilter(4)"
+            type="checkbox" id="" value="option3">
+          <label class="form-check-label" for="">Entregada</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" [checked]="filterStatus.indexOf(8) >= 0" (click)="alterFilter(8)"
+            type="checkbox" id="" value="option3">
+          <label class="form-check-label" for="">Rechazadas</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" [checked]="filterStatus.indexOf(99) >= 0" (click)="alterFilter(99)"
+            type="checkbox" id="" value="option3">
+          <label class="form-check-label" for="">Eliminadas</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <table class="mt-4 table">
     <thead>
       <tr>
@@ -56,14 +94,34 @@
         <td>{{v.serieFactura}}-{{v.factura}}</td>
         <td>{{v.fecha | date : 'shortDate'}}</td>
         <td>{{v.total}}</td>
-        <td>{{v.estado ==  7 ? 'Por confirmar' : 'No definido'}}</td>
+        <td>{{
+            v.estado ==  7 ? 'Por confirmar' 
+            : v.estado ==  6 ? 'Confirmada'
+            : v.estado ==  5 ? 'En tránsito'
+            : v.estado ==  4 ? 'Entregada'
+            : v.estado ==  8 ? 'Rechazada'
+            : v.estado ==  99 ? 'Eliminada'
+            : ''
+        }}</td>
         <td>
-            <button type="button" class="btn btn-secondary" (click)="next(v)" >
-                {{ v.estado == 7 ? 'Confirmar' : 'NA' }}
-            </button>
-            <button type="button" class="btn btn-medium" (click)="detail(content, v)" >Ver detalle</button>
+          <button *ngIf="v.estado != 99 && v.estado != 8" type="button" class="btn btn-primary"
+            (click)="next(v, confirm)">
+            {{ v.estado == 7 ? 'Confirmar' 
+             : v.estado == 6 ? 'Enviar' 
+             : v.estado == 5 ? 'Entregada'
+             : v.estado == 4 ? 'Devolución'  
+             : v.estado == 8 ? ''  
+             : v.estado == 99 ? ''  
+             : 'NA'  
+            }}
+          </button>
+          <button *ngIf="v.estado == 7 || v.estado == 6" type="button" class="btn btn-danger m-1"
+            (click)="delete(v, confirm)">
+            Eliminar
+          </button>
+          <button type="button" class="btn btn-medium" (click)="detail(content, v)">Ver detalle</button>
         </td>
-        
+
       </tr>
     </tbody>
   </table>
@@ -85,8 +143,7 @@
             <div class="form-group">
               <label for="ventaId">Orden ID</label>
               <div class="input-group">
-                <input type="text" class="form-control" name="ventaId" id="ventaId"
-                readonly
+                <input type="text" class="form-control" name="ventaId" id="ventaId" readonly
                   placeholder="Movimiento Inventario ID" [(ngModel)]="venta.ventaId"
                   [ngModelOptions]="{standalone: true}">
               </div>
@@ -97,8 +154,7 @@
               <label for="nombreCliente">Cliente<label class="text-danger">*</label></label>
               <div class="input-group">
                 <input type="text" class="form-control" name="nombreCliente" id="nombreCliente"
-                  placeholder="Nombre del cliente" [(ngModel)]="venta.nombreCliente"
-                  [readonly]="viewDetail"
+                  placeholder="Nombre del cliente" [(ngModel)]="venta.nombreCliente" [readonly]="viewDetail"
                   [ngModelOptions]="{standalone: true}">
               </div>
             </div>
@@ -108,7 +164,7 @@
               <label for="nit">Nit<label class="text-danger">*</label></label>
               <div class="input-group">
                 <input type="text" class="form-control" name="nit" id="nit" placeholder="616168-1"
-                [readonly]="viewDetail" [(ngModel)]="venta.nit" [ngModelOptions]="{standalone: true}">
+                  [readonly]="viewDetail" [(ngModel)]="venta.nit" [ngModelOptions]="{standalone: true}">
               </div>
             </div>
           </div>
@@ -117,7 +173,7 @@
               <label for="fecha">Fecha<label class="text-danger">*</label></label>
               <div class="input-group">
                 <input id="fecha" class="form-control" placeholder="yyyy-mm-dd" name="dp" ngbDatepicker
-                [readonly]="viewDetail" [(ngModel)]="fechaAux" #dp="ngbDatepicker">
+                  [readonly]="viewDetail" [(ngModel)]="fechaAux" #dp="ngbDatepicker">
                 <div class="input-group-append" *ngIf="!viewDetail">
                   <button class="btn btn-outline-secondary calendar" (click)="dp.toggle()" type="button"></button>
                 </div>
@@ -129,7 +185,7 @@
               <label for="factura">Factura<label class="text-danger">*</label></label>
               <div class="input-group">
                 <input type="text" class="form-control" name="factura" id="factura" placeholder="3416541"
-                [readonly]="viewDetail" [(ngModel)]="venta.factura" [ngModelOptions]="{standalone: true}">
+                  [readonly]="viewDetail" [(ngModel)]="venta.factura" [ngModelOptions]="{standalone: true}">
               </div>
             </div>
           </div>
@@ -138,7 +194,7 @@
               <label for="serieFactura">Serie<label class="text-danger">*</label></label>
               <div class="input-group">
                 <input type="text" class="form-control" name="serieFactura" id="serieFactura" placeholder="A-1"
-                [readonly]="viewDetail" [(ngModel)]="venta.serieFactura" [ngModelOptions]="{standalone: true}">
+                  [readonly]="viewDetail" [(ngModel)]="venta.serieFactura" [ngModelOptions]="{standalone: true}">
               </div>
             </div>
           </div>
@@ -147,8 +203,8 @@
               <label for="descripcion">Descripción</label>
               <div class="input-group">
                 <textarea type="text" class="form-control" name="descripcion" id="descripcion"
-                  placeholder="Breve descripción de la orden" [(ngModel)]="venta.descripcion"
-                  [readonly]="viewDetail" [ngModelOptions]="{standalone: true}"></textarea>
+                  placeholder="Breve descripción de la orden" [(ngModel)]="venta.descripcion" [readonly]="viewDetail"
+                  [ngModelOptions]="{standalone: true}"></textarea>
               </div>
             </div>
           </div>
@@ -160,7 +216,7 @@
         </div>
       </div>
       <div class="row" *ngIf="!viewDetail">
-        <div class="col-4 col-md-4" >
+        <div class="col-4 col-md-4">
           <div class="form-group">
             <label for="producto"><small>Producto / Servicio</small></label>
             <div class="input-group">
@@ -176,8 +232,7 @@
             <label for="cantidad"><small>Cantidad</small></label>
             <div class="input-group">
               <input type="number" class="form-control" name="cantidad" id="cantidad" placeholder="1"
-                (keyup)="cambioCantidad($event)" [(ngModel)]="ventaDetalle.cantidad"
-                (change)="cambioCantidad($event)"
+                (keyup)="cambioCantidad($event)" [(ngModel)]="ventaDetalle.cantidad" (change)="cambioCantidad($event)"
                 [ngModelOptions]="{standalone: true}">
             </div>
           </div>
@@ -199,9 +254,8 @@
             </label>
             <div class="input-group">
               <input type="number" class="form-control" name="descuento" id="descuento" placeholder="1"
-                (keyup)="cambioCantidad($event)"
-                (change)="cambioCantidad($event)"
-                [(ngModel)]="ventaDetalle.descuento" [ngModelOptions]="{standalone: true}">
+                (keyup)="cambioCantidad($event)" (change)="cambioCantidad($event)" [(ngModel)]="ventaDetalle.descuento"
+                [ngModelOptions]="{standalone: true}">
             </div>
           </div>
         </div>
@@ -218,11 +272,11 @@
         <div class="col-2 offset-10">
           <div class="d-grid gap-2">
             <button type="button" name="" id="" class="btn btn-small btn-success" (click)="addDetail()"
-            [disabled]="ventaDetalle.sku.length === 0 || ventaDetalle.cantidad <= 0"
-            >Agregar</button>
+              [disabled]="ventaDetalle.sku.length === 0 || ventaDetalle.cantidad <= 0">Agregar</button>
           </div>
         </div>
       </div>
+
     </form>
     <table class="mt-4 table table-sm">
       <thead>
@@ -251,6 +305,31 @@
         </tr>
       </tbody>
     </table>
+    <div class="row mt-4" *ngIf="viewDetail">
+      <div class="col-12">
+        <p class="h5 text-secondary">Historia</p>
+      </div>
+      <div class="col-12">
+        <table class="mt-4 table table-sm">
+          <thead>
+            <tr>
+              <th><small class="text-secondary">Fecha</small></th>
+              <th><small class="text-secondary">Estado </small></th>
+              <th><small class="text-secondary">Comentario </small></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let h of venta.historico; let i = index">
+              <td scope="row" class="text-secondary">
+                {{ h.fecha | date : 'short' }}
+              </td>
+              <td class="text-secondary">{{h.estado}}</td>
+              <td class="text-secondary">{{h.comentario}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
   <div class="modal-footer" *ngIf="!viewDetail">
     <button type="button" class="btn btn-outline-danger" (click)="modal.close('Cancel click')">Cancelar</button>
@@ -259,4 +338,27 @@
       class="btn btn-primary" (click)="modal.close('SaveClick')">Guardar</button>
   </div>
 
+</ng-template>
+<ng-template #confirm let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Confirmar cambio</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p class="h5">El estado de la orden {{ordenActual}} cambiará a: <br><br> <span class="text-dark"> {{estadoActual}}</span> </p>
+    <br>
+    <p class="h6 text-secondary">Agrega un comentario de ser necesario</p>
+    <div class="mb-3">
+      <label for="comentarios" class="form-label"></label>
+      <textarea class="form-control" name="comentarios" id="comentarios" rows="3" [(ngModel)]="comentarios"
+        [ngModelOptions]="{standalone: true}">
+      </textarea>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-danger" (click)="modal.close('Cancel click')">Cancelar</button>
+    <button type="button" class="btn btn-primary" (click)="modal.close('Confirm')">Confirmar</button>
+  </div>
 </ng-template>
