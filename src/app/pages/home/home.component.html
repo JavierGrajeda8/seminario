@@ -1,92 +1,108 @@
 <div class="container">
+  <div class="alert alert-success alert-dismissible fade show" role="alert" *ngIf="mensaje.length > 0">
+    {{ mensaje }}
+    <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close" (click)="cerrarMsj()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="mensajeError.length > 0">
+    {{ mensajeError }}
+    <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close" (click)="cerrarMsjError()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
   <h1 class="display-2">¡Bienvenido!</h1>
-  <p class="h3 text-primary">
-    Negocio: {{negocio?.nombre}}
-  </p>
-  <p class="display-5">
-    {{negocio?.descripcion}}
-  </p>
-  <br>
-  <p class="h4 text-dark">
-    Resumen de órdenes
-  </p>
-  <table class="mt-4 table table-sm">
-    <thead>
-      <tr>
-        <th><small>Estado órdenes</small></th>
-        <th><small>Cantidad </small></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td scope="row" class="text-secondary">Abiertas</td>
-        <td class="text-secondary">{{OrdenAbierta}}</td>
-      </tr>
-      <tr>
-        <td class="text-secondary" scope="row">Confirmadas</td>
-        <td class="text-secondary">{{OrdenConfirmado}}</td>
-      </tr>
-      <tr>
-        <td class="text-secondary" scope="row">Eliminadas</td>
-        <td class="text-secondary">{{OrdenEliminado}}</td>
-      </tr>
-      <tr>
-        <td class="text-secondary" scope="row">En tránsito</td>
-        <td class="text-secondary">{{OrdenTransito}}</td>
-      </tr>
-      <tr>
-        <td class="text-secondary" scope="row">Entregadas</td>
-        <td class="text-secondary">{{OrdenEntregada}}</td>
-      </tr>
-      <tr>
-        <td class="text-secondary" scope="row">Rechazadas</td>
-        <td class="text-secondary">{{OrdenRechazada}}</td>
-      </tr>
-    </tbody>
-  </table>
-  <p class="h4 text-dark">
-    Resumen de productos y servicios
-  </p>
-  <table class="mt-4 table table-sm">
-    <thead>
-      <tr>
-        <th><small>Descipción</small></th>
-        <th><small>Cantidad </small></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="text-secondary" scope="row">Productos</td>
-        <td class="text-secondary">{{cantidadProductos}}</td>
-      </tr>
-      <tr>
-        <td class="text-secondary" scope="row">Servicios</td>
-        <td class="text-secondary">{{cantidadServicios}}</td>
-      </tr>
-      <tr>
-        <td class="text-secondary" scope="row">Productos y servicios</td>
-        <td class="text-secondary">{{cantidadMixtos}}</td>
-      </tr>
-    </tbody>
-  </table>
-  <p class="h4 text-dark">
-    Resumen de inventario
-  </p>
-  <table class="table table-sm">
-    <thead>
-      <tr>
-        <th><small>SKU</small></th>
-        <th><small>Nombre</small></th>
-        <th><small>Cantidad</small></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let i of inventario">
-        <td class="text-secondary" scope="row">{{ i.sku }}</td>
-        <td class="text-secondary">{{i.Producto.nombre}}</td>
-        <td class="text-secondary">{{i.cantidad}} {{i.Producto.unidadMedida}}</td>
-      </tr>
-    </tbody>
-  </table>
-  
+  <div *ngIf="negocio">
+    <p class="h3 text-primary">
+      Negocio: {{negocio?.nombre}}
+    </p>
+    <p class="display-5">
+      {{negocio?.descripcion}}
+    </p>
+    <br>
+    <p class="h4 text-dark">
+      Resumen de órdenes
+    </p>
+    <table class="mt-4 table table-sm">
+      <thead>
+        <tr>
+          <th><small>Estado órdenes</small></th>
+          <th><small>Cantidad </small></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td scope="row" class="text-secondary">Abiertas</td>
+          <td class="text-secondary">{{OrdenAbierta}}</td>
+        </tr>
+        <tr>
+          <td class="text-secondary" scope="row">Confirmadas</td>
+          <td class="text-secondary">{{OrdenConfirmado}}</td>
+        </tr>
+        <tr>
+          <td class="text-secondary" scope="row">Eliminadas</td>
+          <td class="text-secondary">{{OrdenEliminado}}</td>
+        </tr>
+        <tr>
+          <td class="text-secondary" scope="row">En tránsito</td>
+          <td class="text-secondary">{{OrdenTransito}}</td>
+        </tr>
+        <tr>
+          <td class="text-secondary" scope="row">Entregadas</td>
+          <td class="text-secondary">{{OrdenEntregada}}</td>
+        </tr>
+        <tr>
+          <td class="text-secondary" scope="row">Rechazadas</td>
+          <td class="text-secondary">{{OrdenRechazada}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="h4 text-dark">
+      Resumen de productos y servicios
+    </p>
+    <table class="mt-4 table table-sm">
+      <thead>
+        <tr>
+          <th><small>Descipción</small></th>
+          <th><small>Cantidad </small></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="text-secondary" scope="row">Productos</td>
+          <td class="text-secondary">{{cantidadProductos}}</td>
+        </tr>
+        <tr>
+          <td class="text-secondary" scope="row">Servicios</td>
+          <td class="text-secondary">{{cantidadServicios}}</td>
+        </tr>
+        <tr>
+          <td class="text-secondary" scope="row">Productos y servicios</td>
+          <td class="text-secondary">{{cantidadMixtos}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="h4 text-dark">
+      Resumen de inventario
+    </p>
+    <table class="table table-sm">
+      <thead>
+        <tr>
+          <th><small>SKU</small></th>
+          <th><small>Nombre</small></th>
+          <th><small>Cantidad</small></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let i of inventario">
+          <td class="text-secondary" scope="row">{{ i.sku }}</td>
+          <td class="text-secondary">{{i.Producto.nombre}}</td>
+          <td class="text-secondary">{{i.cantidad}} {{i.Producto.unidadMedida}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
 </div>

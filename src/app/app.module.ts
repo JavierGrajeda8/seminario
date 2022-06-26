@@ -17,6 +17,7 @@ import { SeguimientoOrdenComponent } from './pages/seguimiento-orden/seguimiento
 import { ReportesComponent } from './pages/reportes/reportes.component';
 import { InventarioComponent } from './pages/inventario/inventario.component';
 import { HomeComponent } from './pages/home/home.component';
+import { RegisterComponent } from './pages/register/register.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { HomeComponent } from './pages/home/home.component';
     SeguimientoOrdenComponent,
     ReportesComponent,
     InventarioComponent,
-    HomeComponent
+    HomeComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,

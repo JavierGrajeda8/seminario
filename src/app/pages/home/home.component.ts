@@ -18,8 +18,11 @@ import { VentaService } from 'src/app/core/services/venta/venta.service';
 export class HomeComponent implements OnInit {
   negocio: any;
   ventasAll: Venta[] = [];
-  productos: ProductoServicio[]= [];
+  productos: ProductoServicio[] = [];
   inventario: Inventario[] = [];
+
+  mensaje = '';
+  mensajeError = '';
 
   OrdenAbierta = 0;
   OrdenConfirmado = 0;
@@ -31,7 +34,7 @@ export class HomeComponent implements OnInit {
   cantidadProductos = 0;
   cantidadServicios = 0;
   cantidadMixtos = 0;
-  
+
   constructor(
     private negocioService: NegocioService,
     private route: ActivatedRoute,
@@ -45,9 +48,14 @@ export class HomeComponent implements OnInit {
         .valueChanges()
         .subscribe((data) => {
           this.negocio = data as Negocio;
-          this.getProductos();
-          this.getInventario();
-          this.getVentas();
+          if (this.negocio) {
+            this.mensajeError = '';
+            this.getProductos();
+            this.getInventario();
+            this.getVentas();
+          } else {
+            this.mensajeError = 'Por favor elige un giro de negocio';
+          }
         });
     });
   }
@@ -61,12 +69,24 @@ export class HomeComponent implements OnInit {
       .subscribe((data) => {
         this.ventasAll = data as Venta[];
 
-        this.OrdenAbierta = this.ventasAll.filter((v) => v.estado === ConstStatus.abierta).length;
-        this.OrdenConfirmado = this.ventasAll.filter((v) => v.estado === ConstStatus.confirmado).length;
-        this.OrdenEliminado = this.ventasAll.filter((v) => v.estado === ConstStatus.eliminado).length;
-        this.OrdenTransito = this.ventasAll.filter((v) => v.estado === ConstStatus.transito).length;
-        this.OrdenEntregada = this.ventasAll.filter((v) => v.estado === ConstStatus.entregada).length;
-        this.OrdenRechazada = this.ventasAll.filter((v) => v.estado === ConstStatus.rechazada).length;
+        this.OrdenAbierta = this.ventasAll.filter(
+          (v) => v.estado === ConstStatus.abierta
+        ).length;
+        this.OrdenConfirmado = this.ventasAll.filter(
+          (v) => v.estado === ConstStatus.confirmado
+        ).length;
+        this.OrdenEliminado = this.ventasAll.filter(
+          (v) => v.estado === ConstStatus.eliminado
+        ).length;
+        this.OrdenTransito = this.ventasAll.filter(
+          (v) => v.estado === ConstStatus.transito
+        ).length;
+        this.OrdenEntregada = this.ventasAll.filter(
+          (v) => v.estado === ConstStatus.entregada
+        ).length;
+        this.OrdenRechazada = this.ventasAll.filter(
+          (v) => v.estado === ConstStatus.rechazada
+        ).length;
       });
   }
 
@@ -76,9 +96,13 @@ export class HomeComponent implements OnInit {
       .valueChanges()
       .subscribe((data) => {
         this.productos = data as ProductoServicio[];
-        
-        this.cantidadProductos = this.productos.filter((v) => v.tipo == 1).length;
-        this.cantidadServicios = this.productos.filter((v) => v.tipo == 2).length;
+
+        this.cantidadProductos = this.productos.filter(
+          (v) => v.tipo == 1
+        ).length;
+        this.cantidadServicios = this.productos.filter(
+          (v) => v.tipo == 2
+        ).length;
         this.cantidadMixtos = this.productos.filter((v) => v.tipo == 3).length;
       });
   }
@@ -91,4 +115,7 @@ export class HomeComponent implements OnInit {
         this.inventario = data as Inventario[];
       });
   }
+
+  cerrarMsjError() {}
+  cerrarMsj() {}
 }

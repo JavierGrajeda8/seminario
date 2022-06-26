@@ -5,28 +5,27 @@
         <form>
           <div class="card">
             <div class="card-header">
-              Login
+              Registro
             </div>
             <div class="card-body">
               <div class="mb-3">
                 <label for="" class="form-label">Correo electrónico</label>
                 <input required #email type="email" (keyup)="validateMail($event)" [(ngModel)]="mail"
-                  [ngModelOptions]="{standalone: true}" class="form-control" name="" id="mail" autocomplete="username"
+                  [ngModelOptions]="{standalone: true}" class="form-control" name="" id="" autocomplete="username"
                   aria-describedby="emailHelpId" placeholder="correo@seminario.com">
                 <small id="emailHelpId" class="form-text text-muted">Por favor ingresa un correo válido</small>
               </div>
               <div class="mb-3">
                 <label for="" class="form-label">Password</label>
-                <input required type="password" class="form-control" name="" id="password" autocomplete="current-password" placeholder="" [(ngModel)]="password"
+                <input required type="password" class="form-control" name="" id="" placeholder="" [(ngModel)]="password" autocomplete="current-password" 
                   [ngModelOptions]="{standalone: true}" aria-describedby="passwordHelpId">
               </div>
               <small id="passwordHelpId" class="form-text text-muted">Por favor ingresa una contraseña</small>
             </div>
             <div class="modal-footer">
-              <button type="button" (click)="goto('register')" class="btn btn-outline-secondary">Ir a registro</button>
-
-              <button type="submit" (click)="login()" [disabled]="!validMail || password.length == 0" name="" id="registerButton"
-                class="btn btn-primary">Login</button>
+                <button type="button" (click)="goto('login')" class="btn btn-outline-secondary">Ir a login</button>
+                
+              <button type="submit" (click)="register()" [disabled]="!validMail || password.length == 0" name="" id="" class="btn btn-primary">Registrarse</button>
               <label *ngIf="mensajeError.length > 0" class="text-danger">{{mensajeError}}</label>
             </div>
           </div>

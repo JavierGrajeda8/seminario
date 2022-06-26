@@ -1,11 +1,12 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
   <div class="container-fluid">
-    <a class="navbar-brand">Autenticado: <b></b></a>
+    <a *ngIf="mail.length == 0" class="navbar-brand">Corporativo</a>
+    <a *ngIf="mail.length > 0" class="navbar-brand">Corporativo: <b>{{mail}}</b></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
       aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <div *ngIf="mail.length > 0" class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item">
           <a class="nav-link active" style="cursor: pointer;" aria-current="page" (click)="goToRoute('')">Inicio</a>
@@ -40,7 +41,7 @@
               (click)="changeRole(negocio)">{{ negocio.nombre }}</button>
           </div>
         </div>
-        <button class="ms-2 btn btn-outline-light" type="submit">Salir</button>
+        <button class="ms-2 btn btn-outline-light" type="submit" (click)="logout()" >Salir</button>
       </span>
     </div>
   </div>

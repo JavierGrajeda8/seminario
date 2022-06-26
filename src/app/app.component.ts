@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Negocio } from './core/interfaces/Negocio';
+import { AuthService } from './core/services/auth/auth.service';
 import { NegocioService } from './core/services/negocio/negocio.service';
 
 @Component({
@@ -15,11 +16,13 @@ export class AppComponent {
   negocio: any;
   orderby: string = '';
   mensajeError: string = '';
+  mail = '';
 
   constructor(
     private negocioService: NegocioService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {
     this.getNegocios();
     this.route.queryParams.subscribe((params: any) => {
@@ -32,6 +35,15 @@ export class AppComponent {
             this.empresa = this.negocio.nombre;
           }
         });
+    });
+    this.authService.isLogged().subscribe((data) => {
+      console.log('data', data);
+      if (data) {
+        this.mail = data.email;
+      } else {
+        this.mail = '';
+        this.goto('login');
+      }
     });
   }
 
@@ -62,6 +74,11 @@ export class AppComponent {
     }
   }
 
+  goto(route: string) {
+    this.mensajeError = '';
+    this.router.navigate([route]);
+  }
+
   changeRole(negocio: Negocio) {
     this.empresa = negocio.nombre;
     this.negocio = negocio;
@@ -74,6 +91,12 @@ export class AppComponent {
       // preserve the existing query params in the route
       skipLocationChange: false,
       // do not trigger navigation
+    });
+  }
+
+  logout() {
+    this.authService.logOut().then(() => {
+      this.goToRoute('login');
     });
   }
 }

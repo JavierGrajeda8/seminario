@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { StorageService } from 'src/app/shared/services/storage/storage.service';
-import { ConstStrings } from '../../constants/constStrings';
 import { User } from '../../interfaces/User';
 
 @Injectable({
@@ -14,7 +12,6 @@ export class AuthService {
   public name = '';
   constructor(
     public angularFireAuth: AngularFireAuth,
-    private storage: StorageService
   ) {}
 
   loginWithEmailPassword(email: string, password: string) {
@@ -39,7 +36,9 @@ export class AuthService {
         .createUserWithEmailAndPassword(email, password)
         .then((result: any) => {
           resolve0(result);
-        });
+        }).catch((error) => {
+          reject(error);
+        })
     });
   }
 

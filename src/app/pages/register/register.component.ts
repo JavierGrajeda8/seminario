@@ -3,11 +3,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
+  selector: 'app-register',
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.scss'],
 })
-export class LoginComponent implements OnInit {
+export class RegisterComponent implements OnInit {
   validMail = false;
 
   mail = '';
@@ -24,15 +24,17 @@ export class LoginComponent implements OnInit {
     private route: ActivatedRoute
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    
+  }
 
   validateMail(evt: any) {
     this.validMail = this.regexp.test(this.mail);
   }
 
-  login() {
+  register() {
     this.authService
-      .loginWithEmailPassword(this.mail, this.password)
+      .registerWithEmail(this.mail, this.password)
       .then((response) => {
         this.mensajeError = '';
         this.goto('');

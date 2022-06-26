@@ -6,11 +6,13 @@ import { InventarioComponent } from './pages/inventario/inventario.component';
 import { LoginComponent } from './pages/login/login.component';
 import { NegocioComponent } from './pages/negocio/negocio.component';
 import { ProductoComponent } from './pages/producto/producto.component';
+import { RegisterComponent } from './pages/register/register.component';
 import { ReportesComponent } from './pages/reportes/reportes.component';
 
 const routes: Routes = [
   { path: "", component: HomeComponent },
   { path: "login", component: LoginComponent },
+  { path: "register", component: RegisterComponent },
   { path: "negocio", component: NegocioComponent },
   { path: "crear-orden", component: CrearOrdenComponent },
   { path: "reporte-orden", component: ReportesComponent },
