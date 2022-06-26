@@ -116,6 +116,11 @@ export class HomeComponent implements OnInit {
       });
   }
 
-  cerrarMsjError() {}
-  cerrarMsj() {}
+  cerrarMsjError() {
+    this.mensajeError =  '';
+  }
+  cerrarMsj() {
+    this.mensaje =  '';
+
+  }
 }
